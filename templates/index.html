@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Leaf Disease Detection</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script>
+      function displayResult(resultId, jsonResponse) {
+  var resultElement = document.getElementById(resultId);
+  resultElement.innerHTML = jsonResponse['disease'];
+}
+
+    </script>
+  </head>
+  <body>
+    <h1>Leaf Disease Detection</h1>
+    <form id="upload-form">
+      <label for="image">Upload an image of a leaf:</label>
+      <input type="file" id="image" name="image">
+      <button type="submit">Detect Disease</button>
+    </form>
+    <div id="result">
+
+    <span>
+
+    </span>  
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+    <script>
+      $(function() {
+        $('#upload-form').submit(function(event) {
+          event.preventDefault();
+          var formData = new FormData();
+          formData.append('image', $('#image')[0].files[0]);
+          
+          $.ajax({
+            url: '/predict',
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false,
+            success: function(response) {
+              console.log(response);
+              $('#result').html('<p>Predicted disease: ' + response['disease'] + '</p>' + 
+                                '<img src="data:image/jpeg;base64,' + response['image'] + '">');
+            },
+            error: function(error) {
+              console.log(error);
+            }
+          });
+        });
+      });
+    </script>
+  </body>
+</html>
